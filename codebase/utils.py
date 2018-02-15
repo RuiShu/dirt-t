@@ -27,8 +27,13 @@ def delete_existing(path):
         if os.path.exists(path):
             shutil.rmtree(path)
 
+def save_model(saver, M, model_dir, global_step):
+    path = saver.save(M.sess, os.path.join(model_dir, 'model'),
+                      global_step=global_step)
+    print "Saving model to {}".format(path)
+
 def save_accuracy(M, fn_acc_key, tag, data,
-                  train_writer=None, step=None, print_list=None,
+                  train_writer=None, global_step=None, print_list=None,
                   full=True):
     """Log the accuracy of model on data to tf.summary.FileWriter
 
@@ -37,14 +42,14 @@ def save_accuracy(M, fn_acc_key, tag, data,
     tag          - (str) summary tag for FileWriter
     data         - (Data) data object with images/labels attributes
     train_writer - (FileWriter)
-    step         - (int) global step in file writer
+    global_step  - (int) global step in file writer
     print_list   - (list) list of vals to print to stdout
     full         - (bool) use full dataset v. first 1000 samples
     """
     fn_acc = getattr(M, fn_acc_key, None)
     if fn_acc:
         acc, summary = compute_accuracy(fn_acc, tag, data, full)
-        train_writer.add_summary(summary, step + 1)
+        train_writer.add_summary(summary, global_step)
         print_list += [os.path.basename(tag), acc]
 
 def compute_accuracy(fn_acc, tag, data, full=True):
