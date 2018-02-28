@@ -38,6 +38,7 @@ class Data(object):
         y = self.labeler(x) if self.labels is None else self.labels[idx]
         return x, y
 
+
 class Mnist(object):
     def __init__(self, shape=(32, 32, 3)):
         """MNIST domain train/test data
@@ -45,9 +46,10 @@ class Mnist(object):
         shape - (3,) HWC info
         """
         print "Loading MNIST"
-        data = np.load(os.path.join(PATH, 'mnist.npz'))
-        trainx = np.concatenate((data['x_train'], data['x_valid']), axis=0)
-        trainy = np.concatenate((data['y_train'], data['y_valid']))
+        data = np.load(os.path.join(PATH, 'mnist_784.npz'))
+
+        trainx = data['x_train']
+        trainy = data['y_train']
         trainy = np.eye(10)[trainy].astype('float32')
 
         testx = data['x_test']
@@ -74,7 +76,6 @@ class Mnist(object):
         resized_x = resized_x.reshape(-1, H, W, 1)
         resized_x = np.tile(resized_x, (1, 1, 1, C))
         return resized_x
-
 
 class Mnistm(object):
     def __init__(self, shape=(28, 28, 3), seed=0, npc=None):

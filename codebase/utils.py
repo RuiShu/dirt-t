@@ -2,7 +2,6 @@ from args import args
 import tensorflow as tf
 import shutil
 import os
-import datasets
 import numpy as np
 
 def u2t(x):
