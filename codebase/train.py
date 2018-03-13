@@ -57,7 +57,7 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
     # Replace src domain with psuedolabeled trg
     if args.dirt > 0:
         print "Setting backup and updating backup model"
-        src = PseudoData(args.trg, trg, M)
+        src = PseudoData(args.trg, trg, M.teacher)
         M.sess.run(M.update_teacher)
 
         print_list = []
@@ -73,8 +73,8 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
 
         print print_list
 
-    if src: print "Src size:", src.train.images.shape
-    if trg: print "Trg size:", trg.train.images.shape
+    if src: get_info(args.src, src)
+    if trg: get_info(args.trg, trg)
     print "Batch size:", bs
     print "Iterep:", iterep
     print "Total iterations:", n_epoch * iterep
