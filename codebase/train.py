@@ -60,6 +60,7 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
         src = PseudoData(args.trg, trg, M.teacher)
         M.sess.run(M.update_teacher)
 
+        # Sanity check model
         print_list = []
         if src:
             save_acc(M, 'fn_ema_acc', 'test/src_test_ema_1k',
