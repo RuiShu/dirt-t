@@ -1,12 +1,10 @@
 import tensorflow as tf
 import tensorbayes as tb
 import numpy as np
-from tensorflow.contrib.framework import add_arg_scope
+from codebase.args import args
 from tensorbayes.tfutils import softmax_cross_entropy_with_two_logits as softmax_xent_two
+from tensorflow.contrib.framework import add_arg_scope
 
-################
-# Extra layers #
-################
 @add_arg_scope
 def normalize_perturbation(d, scope=None):
     with tf.name_scope(scope, 'norm_pert'):
@@ -63,6 +61,6 @@ def vat_loss(x, p, classifier, scope=None):
     with tf.name_scope(scope, 'smoothing_loss'):
         x_adv = perturb_image(x, p, classifier)
         p_adv = classifier(x_adv, phase=True, reuse=True)
-        loss = softmax_xent_two(labels=tf.stop_gradient(p), logits=p_adv)
+        loss = tf.reduce_mean(softmax_xent_two(labels=tf.stop_gradient(p), logits=p_adv))
 
     return loss
