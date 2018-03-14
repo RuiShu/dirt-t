@@ -8,8 +8,8 @@ from pprint import pprint
 from tensorbayes.tfutils import softmax_cross_entropy_with_two_logits as softmax_xent_two
 from tensorbayes.layers import placeholder, constant
 from tensorflow.python.ops.nn_ops import softmax_cross_entropy_with_logits_v2 as softmax_xent
-from tensorflow.python.ops.nn_ops import sigmoid_cross_entropy_with_logits as sigmoid_xent
-nn = importlib.import_module('nns.{}'.format(args.nn))
+from tensorflow.python.ops.nn_impl import sigmoid_cross_entropy_with_logits as sigmoid_xent
+nn = importlib.import_module('codebase.models.nns.{}'.format(args.nn))
 
 def dirtt():
     T = tb.utils.TensorDict(dict(
@@ -54,7 +54,7 @@ def dirtt():
     ema = tf.train.ExponentialMovingAverage(decay=0.998)
     var_class = tf.get_collection('trainable_variables', 'class/')
     ema_op = ema.apply(var_class)
-    ema_p = nn.classifier(T.test_x, phase=False, reuse=True, getter=tb.get_getter(ema))
+    ema_p = nn.classifier(T.test_x, phase=False, reuse=True, getter=tb.tfutils.get_getter(ema))
 
     # Teacher model (a back-up of EMA model)
     teacher_p = nn.classifier(T.test_x, phase=False, scope='teacher')
@@ -71,8 +71,7 @@ def dirtt():
     # Accuracies
     src_acc = basic_accuracy(T.src_y, src_p)
     trg_acc = basic_accuracy(T.trg_y, trg_p)
-    ema_acc = basic_accuracy(T.test_y, T.ema_p)
-    fn_test_acc = tb.function(T.sess, [T.test_x, T.test_y], test_acc)
+    ema_acc = basic_accuracy(T.test_y, ema_p)
     fn_ema_acc = tb.function(T.sess, [T.test_x, T.test_y], ema_acc)
 
     # Optimizer
@@ -103,7 +102,7 @@ def dirtt():
                     tf.summary.scalar('lipschitz/loss_trg_vat', loss_trg_vat),
                     tf.summary.scalar('lipschitz/loss_src_vat', loss_src_vat),
                     tf.summary.scalar('hyper/dw', dw),
-                    tf.summary.scalar('hyper/cw', bw),
+                    tf.summary.scalar('hyper/cw', cw),
                     tf.summary.scalar('hyper/sw', sw),
                     tf.summary.scalar('hyper/tw', tw),
                     tf.summary.scalar('acc/src_acc', src_acc),
@@ -125,9 +124,8 @@ def dirtt():
                    c('trg'), trg_acc]
     T.ops_disc = [summary_disc, train_disc]
     T.ops_main = [summary_main, train_main]
-    T.fn_test_acc = fn_test_acc
     T.fn_ema_acc = fn_ema_acc
     T.teacher = teacher
-    T.teacher_update = teacher_update
+    T.update_teacher = update_teacher
 
     return T

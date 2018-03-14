@@ -3,7 +3,7 @@ from codebase.args import args
 from codebase.models.extra_layers import leaky_relu, noise
 from tensorbayes.layers import dense, conv2d, avg_pool, max_pool, batch_norm, instance_norm
 from tensorflow.contrib.framework import arg_scope
-from tensorflow.python.layers.core import dropout
+from tensorflow.python.ops.nn_ops import dropout
 
 def classifier(x, phase, enc_phase=1, trim=0, scope='class', reuse=None, internal_update=False, getter=None):
     with tf.variable_scope(scope, reuse=reuse, custom_getter=getter):
@@ -14,21 +14,21 @@ def classifier(x, phase, enc_phase=1, trim=0, scope='class', reuse=None, interna
             preprocess = instance_norm if args.inorm else tf.identity
             layout = [
                 (preprocess, (), {}),
-                (conv2d, (64, 3, 1), {}),
-                (conv2d, (64, 3, 1), {}),
-                (conv2d, (64, 3, 1), {}),
+                (conv2d, (96, 3, 1), {}),
+                (conv2d, (96, 3, 1), {}),
+                (conv2d, (96, 3, 1), {}),
                 (max_pool, (2, 2), {}),
                 (dropout, (), dict(training=phase)),
                 (noise, (1,), dict(phase=phase)),
-                (conv2d, (64, 3, 1), {}),
-                (conv2d, (64, 3, 1), {}),
-                (conv2d, (64, 3, 1), {}),
+                (conv2d, (192, 3, 1), {}),
+                (conv2d, (192, 3, 1), {}),
+                (conv2d, (192, 3, 1), {}),
                 (max_pool, (2, 2), {}),
                 (dropout, (), dict(training=phase)),
                 (noise, (1,), dict(phase=phase)),
-                (conv2d, (64, 3, 1), {}),
-                (conv2d, (64, 3, 1), {}),
-                (conv2d, (64, 3, 1), {}),
+                (conv2d, (192, 3, 1), {}),
+                (conv2d, (192, 3, 1), {}),
+                (conv2d, (192, 3, 1), {}),
                 (avg_pool, (), dict(global_pool=True)),
                 (dense, (args.Y,), dict(activation=None))
             ]
