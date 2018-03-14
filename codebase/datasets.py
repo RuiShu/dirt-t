@@ -11,14 +11,17 @@ from utils import u2t, s2t
 
 def get_info(domain_id, domain):
     train, test = domain.train, domain.test
+    Y_shape_train = None if train.labels is None else train.labels.shape
+    Y_shape_test = None if test.labels is None else test.labels.shape
+
     print '{} info'.format(domain_id)
-    Y_shape = None if train.labels is None else train.labels.shape
-    print 'Train X/Y shapes: {}, {}'.format(train.images.shape, Y_shape)
+    print 'Train X/Y shapes: {}, {}'.format(train.images.shape, Y_shape_train)
     print 'Train X min/max/cast: {}, {}, {}'.format(
         train.images.min(),
         train.images.max(),
         train.cast)
-    print 'Test shapes: {}, {}'.format(test.images.shape, test.labels.shape)
+
+    print 'Test shapes: {}, {}'.format(test.images.shape, Y_shape_test)
     print 'Test X min/max/cast: {}, {}, {}\n'.format(
         test.images.min(),
         test.images.max(),

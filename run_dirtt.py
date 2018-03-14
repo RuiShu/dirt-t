@@ -73,8 +73,7 @@ if args.dirt > 0:
         ('run={:04d}',  run)
     ]
     vada_name = '_'.join([t.format(v) for (t, v) in setup])
-    vada_path = os.path.join('checkpoints', vada_name)
-    path = tf.train.latest_checkpoint(restoration_path)
+    path = tf.train.latest_checkpoint(os.path.join('checkpoints', vada_name))
     saver.restore(M.sess, path)
     print "Restored from {}".format(path)
 

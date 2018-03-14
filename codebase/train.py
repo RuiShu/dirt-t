@@ -99,6 +99,11 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
                                             message='{}/{}'.format(epoch, i),
                                             display=args.run >= 999)
 
+        # Update pseudolabeler
+        if args.dirt and (i + 1) % args.dirt == 0:
+            print "Updating teacher model"
+            M.sess.run(M.update_teacher)
+
         # Log end-of-epoch values
         if end_epoch:
             print_list = M.sess.run(M.ops_print, feed_dict)
@@ -115,11 +120,6 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
 
             print_list += ['epoch', epoch]
             print print_list
-
-        # Update pseudolabeler
-        if args.dirt and (i + 1) % args.dirt == 0:
-            print "Updating teacher model"
-            M.sess.run(M.update_teacher)
 
         if saver and (i + 1) % itersave == 0:
             save_model(saver, M, model_dir, i + 1)
