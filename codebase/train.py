@@ -1,8 +1,8 @@
 import tensorflow as tf
 import tensorbayes as tb
 from codebase.args import args
-from codebase.datasets import PseudoData
-from utils import delete_existing, save_accuracy as save_acc
+from codebase.datasets import PseudoData, get_info
+from utils import delete_existing, save_value, save_model
 import os
 import sys
 import numpy as np
@@ -39,6 +39,7 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
     # Training settings
     bs = 64
     iterep = 1000
+    itersave = 20000
     n_epoch = 80
     epoch = 0
     feed_dict = {}
@@ -63,13 +64,13 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
         # Sanity check model
         print_list = []
         if src:
-            save_acc(M, 'fn_ema_acc', 'test/src_test_ema_1k',
+            save_value(M.fn_ema_acc, 'test/src_test_ema_1k',
                      src.test,  train_writer, 0, print_list, full=False)
 
         if trg:
-            save_acc(M, 'fn_ema_acc', 'test/trg_test_ema',
+            save_value(M.fn_ema_acc, 'test/trg_test_ema',
                      trg.test,  train_writer, 0, print_list)
-            save_acc(M, 'fn_ema_acc', 'test/trg_train_ema_1k',
+            save_value(M.fn_ema_acc, 'test/trg_train_ema_1k',
                      trg.train, train_writer, 0, print_list, full=False)
 
         print print_list
@@ -103,13 +104,13 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
             print_list = M.sess.run(M.ops_print, feed_dict)
 
             if src:
-                save_acc(M, 'fn_ema_acc', 'test/src_test_ema_1k',
+                save_value(M.fn_ema_acc, 'test/src_test_ema_1k',
                          src.test,  train_writer, i + 1, print_list, full=False)
 
             if trg:
-                save_acc(M, 'fn_ema_acc', 'test/trg_test_ema',
+                save_value(M.fn_ema_acc, 'test/trg_test_ema',
                          trg.test,  train_writer, i + 1, print_list)
-                save_acc(M, 'fn_ema_acc', 'test/trg_train_ema_1k',
+                save_value(M.fn_ema_acc, 'test/trg_train_ema_1k',
                          trg.train, train_writer, i + 1, print_list, full=False)
 
             print_list += ['epoch', epoch]
@@ -120,7 +121,7 @@ def train(M, src=None, trg=None, has_disc=True, saver=None, model_name=None):
             print "Updating teacher model"
             M.sess.run(M.update_teacher)
 
-        if saver and (i + 1) % 20000 == 0:
+        if saver and (i + 1) % itersave == 0:
             save_model(saver, M, model_dir, i + 1)
 
     # Saving final model

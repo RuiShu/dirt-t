@@ -1,8 +1,9 @@
-from args import args
-import tensorflow as tf
-import shutil
 import os
 import numpy as np
+import shutil
+import tensorbayes as tb
+import tensorflow as tf
+from args import args
 
 def u2t(x):
     """Convert uint8 to [-1, 1] float
@@ -31,13 +32,12 @@ def save_model(saver, M, model_dir, global_step):
                       global_step=global_step)
     print "Saving model to {}".format(path)
 
-def save_accuracy(M, fn_acc_key, tag, data,
-                  train_writer=None, global_step=None, print_list=None,
-                  full=True):
-    """Log the accuracy of model on data to tf.summary.FileWriter
+def save_value(fn_val, tag, data,
+               train_writer=None, global_step=None, print_list=None,
+               full=True):
+    """Log fn_val evaluation to tf.summary.FileWriter
 
-    M            - (TensorDict) the model
-    fn_acc_key   - (str) key to query the relevant function in M
+    fn_val       - (fn) Takes (x, y) as input and returns value
     tag          - (str) summary tag for FileWriter
     data         - (Data) data object with images/labels attributes
     train_writer - (FileWriter)
@@ -45,16 +45,14 @@ def save_accuracy(M, fn_acc_key, tag, data,
     print_list   - (list) list of vals to print to stdout
     full         - (bool) use full dataset v. first 1000 samples
     """
-    fn_acc = getattr(M, fn_acc_key, None)
-    if fn_acc:
-        acc, summary = compute_accuracy(fn_acc, tag, data, full)
-        train_writer.add_summary(summary, global_step)
-        print_list += [os.path.basename(tag), acc]
+    acc, summary = compute_value(fn_val, tag, data, full)
+    train_writer.add_summary(summary, global_step)
+    print_list += [os.path.basename(tag), acc]
 
-def compute_accuracy(fn_acc, tag, data, full=True):
-    """Compute accuracy w.r.t. data
+def compute_value(fn_val, tag, data, full=True):
+    """Compute value w.r.t. data
 
-    fn_acc - (fn) Takes (x, y) as input and returns accuracy
+    fn_val - (fn) Takes (x, y) as input and returns value
     tag    - (str) summary tag for FileWriter
     data   - (Data) data object with images/labels attributes
     full   - (bool) use full dataset v. first 1000 samples
@@ -76,7 +74,7 @@ def compute_accuracy(fn_acc, tag, data, full=True):
     for i in xrange(0, n, bs):
         x = data.preprocess(xs[i:i+bs])
         y = ys[i:i+bs] if ys is not None else data.labeler(x)
-        acc += fn_acc(x, y) / n * len(x)
+        acc += fn_val(x, y) / n * len(x)
 
     summary = tf.Summary.Value(tag=tag, simple_value=acc)
     summary = tf.Summary(value=[summary])
