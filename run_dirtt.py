@@ -6,13 +6,13 @@ from pprint import pprint
 import tensorflow as tf
 
 # Settings
+PATH = '/home/ruishu/data'
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--src',    type=str,   default='mnist',   help="Src data")
 parser.add_argument('--trg',    type=str,   default='svhn',    help="Trg data")
 parser.add_argument('--nn',     type=str,   default='small',   help="Architecture")
 parser.add_argument('--trim',   type=int,   default=5,         help="Trim")
 parser.add_argument('--inorm',  type=int,   default=1,         help="Instance normalization flag")
-parser.add_argument('--pert',   type=str,   default='vat',     help="Type of perturbation")
 parser.add_argument('--radius', type=float, default=3.5,       help="Perturbation 2-norm ball radius")
 parser.add_argument('--dw',     type=float, default=1e-2,      help="Domain weight")
 parser.add_argument('--bw',     type=float, default=1e-2,      help="Beta (KL) weight")
@@ -21,6 +21,7 @@ parser.add_argument('--tw',     type=float, default=1e-2,      help="Trg weight"
 parser.add_argument('--lr',     type=float, default=1e-3,      help="Learning rate")
 parser.add_argument('--dirt',   type=int,   default=0,         help="0 == VADA, >0 == DIRT-T interval")
 parser.add_argument('--run',    type=int,   default=999,       help="Run index. >= 999 == debugging")
+parser.add_argument('--datadir',type=str,   default=PATH,      help="Data directory")
 parser.add_argument('--logdir', type=str,   default='log',     help="Log directory")
 codebase_args.args = args = parser.parse_args()
 
