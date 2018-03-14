@@ -1,14 +1,13 @@
-import numpy as np
+import cPickle as pkl
 import os
-from scipy.io import loadmat
+import numpy as np
 import scipy
 import sys
-import cPickle as pkl
 import tensorbayes as tb
+from codebase.args import args
+from scipy.io import loadmat
 from itertools import izip
 from utils import u2t, s2t
-
-PATH = '/home/ruishu/data'
 
 def get_info(domain_id, domain):
     train, test = domain.train, domain.test
@@ -58,8 +57,8 @@ class Mnist(object):
         """MNIST domain train/test data
         """
         print "Loading MNIST"
-        train = loadmat(os.path.join(PATH, 'mnist32_train.mat'))
-        test = loadmat(os.path.join(PATH, 'mnist32_test.mat'))
+        train = loadmat(os.path.join(args.datadir, 'mnist32_train.mat'))
+        test = loadmat(os.path.join(args.datadir, 'mnist32_test.mat'))
 
         trainx = s2t(train['X'])
         trainy = train['y'].reshape(-1)
@@ -83,8 +82,8 @@ class Mnistm(object):
         """
         raise NotImplementedError('Did not change mnistm yet')
         print "Loading MNIST-M"
-        data = pkl.load(open(os.path.join(PATH, 'mnistm_data.pkl')))
-        labels = pkl.load(open(os.path.join(PATH, 'mnistm_labels.pkl')))
+        data = pkl.load(open(os.path.join(args.datadir, 'mnistm_data.pkl')))
+        labels = pkl.load(open(os.path.join(args.datadir, 'mnistm_labels.pkl')))
 
         trainx, trainy = data['train'], labels['train']
         validx, validy = data['valid'], labels['valid']
@@ -117,8 +116,8 @@ class Svhn(object):
         train - (str) flag for using 'train' or 'extra' data
         """
         print "Loading SVHN"
-        train = loadmat(os.path.join(PATH, '{:s}_32x32.mat'.format(train)))
-        test = loadmat(os.path.join(PATH, 'test_32x32.mat'))
+        train = loadmat(os.path.join(args.datadir, '{:s}_32x32.mat'.format(train)))
+        test = loadmat(os.path.join(args.datadir, 'test_32x32.mat'))
 
         # Change format
         trainx, trainy = self.change_format(train)
@@ -142,8 +141,8 @@ class SynDigits(object):
         """Synthetic SVHN domain train/test data
         """
         print "Loading SynDigits"
-        train = loadmat(os.path.join(PATH, 'synth_train_32x32.mat'))
-        test = loadmat(os.path.join(PATH, 'synth_test_32x32.mat'))
+        train = loadmat(os.path.join(args.datadir, 'synth_train_32x32.mat'))
+        test = loadmat(os.path.join(args.datadir, 'synth_test_32x32.mat'))
 
         # Change format
         trainx, trainy = self.change_format(train)
@@ -166,7 +165,7 @@ class Gtsrb(object):
         """GTSRB street sign train/test adta
         """
         print "Loading GTSRB"
-        data = loadmat(os.path.join(PATH, 'gtsrb.mat'))
+        data = loadmat(os.path.join(args.datadir, 'gtsrb.mat'))
 
         # Not really sure what happened here
         data['y'] = data['y'].reshape(-1)
@@ -195,7 +194,7 @@ class SynSigns(object):
         """Synthetic street signs domain train/test data
         """
         print "Loading SynSigns"
-        data = loadmat(os.path.join(PATH, 'synsigns.mat'))
+        data = loadmat(os.path.join(args.datadir, 'synsigns.mat'))
 
         # Not really sure what happened here
         data['y'] = data['y'].reshape(-1)
@@ -224,8 +223,8 @@ class Cifar(object):
         Modification: one of the classes was removed to match STL
         """
         print "Loading CIFAR"
-        train = loadmat(os.path.join(PATH, 'cifar_train.mat'))
-        test = loadmat(os.path.join(PATH, 'cifar_test.mat'))
+        train = loadmat(os.path.join(args.datadir, 'cifar_train.mat'))
+        test = loadmat(os.path.join(args.datadir, 'cifar_test.mat'))
 
         # Get data
         trainx, trainy = train['X'], train['y']
@@ -246,9 +245,8 @@ class Stl(object):
         """
         print "Loading STL"
         sys.stdout.flush()
-        PATH = '/mnt/ilcompf5d0/user/rshu/data'
-        train = loadmat(os.path.join(PATH, 'stl_train.mat'))
-        test = loadmat(os.path.join(PATH, 'stl_test.mat'))
+        train = loadmat(os.path.join(args.datadir, 'stl_train.mat'))
+        test = loadmat(os.path.join(args.datadir, 'stl_test.mat'))
 
         # Get data
         trainx, trainy = train['X'], train['y']
