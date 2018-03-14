@@ -54,26 +54,23 @@ class Data(object):
         return x, y
 
 class Mnist(object):
-    def __init__(self, shape=(32, 32, 3)):
+    def __init__(self):
         """MNIST domain train/test data
-
-        shape - (3,) HWC info
         """
-        raise NotImplementedError('Double check max/min')
         print "Loading MNIST"
         train = loadmat(os.path.join(PATH, 'mnist32_train.mat'))
         test = loadmat(os.path.join(PATH, 'mnist32_test.mat'))
 
-        trainx = train['X']
-        trainy = train['y']
+        trainx = s2t(train['X'])
+        trainy = train['y'].reshape(-1)
         trainy = np.eye(10)[trainy].astype('float32')
 
-        testx = test['X']
-        testy = test['y'].astype('int')
+        testx = s2t(test['X'])
+        testy = test['y'].reshape(-1)
         testy = np.eye(10)[testy].astype('float32')
 
-        trainx = trainx.reshape(-1, 32, 32, 1).astype('float32')
-        testx = testx.reshape(-1, 32, 32, 1).astype('float32')
+        trainx = trainx.reshape(-1, 32, 32, 3).astype('float32')
+        testx = testx.reshape(-1, 32, 32, 3).astype('float32')
 
         self.train = Data(trainx, trainy)
         self.test = Data(testx, testy)
@@ -284,28 +281,28 @@ def get_data(domain_id):
     """Returns Domain object based on domain_id
     """
     if domain_id == 'svhn':
-        return datasets.Svhn()
+        return Svhn()
 
     elif domain_id == 'digit':
-        return datasets.SynDigits()
+        return SynDigits()
 
-    elif domain_id == 'mnist32':
-        return datasets.Mnist(shape=(32, 32, 3))
+    elif domain_id == 'mnist':
+        return Mnist()
 
-    elif domain_id == 'mnistm32':
-        return datasets.Mnistm(shape=(32, 32, 3))
+    elif domain_id == 'mnistm':
+        return Mnistm(shape=(32, 32, 3))
 
     elif domain_id == 'gtsrb':
-        return datasets.Gtsrb()
+        return Gtsrb()
 
     elif domain_id == 'sign':
-        return datasets.SynSigns()
+        return SynSigns()
 
     elif domain_id == 'cifar':
-        return datasets.Cifar()
+        return Cifar()
 
     elif domain_id == 'stl':
-        return datasets.Stl()
+        return Stl()
 
     else:
         raise Exception('dataset {:s} not recognized'.format(domain_id))
