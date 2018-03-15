@@ -32,3 +32,4 @@ Tensorboard logs will be saved to `./log/` by default.
 
 ### Tensorboard Visualization
 
+![VADA](assets/tensorboard_vada.png)
