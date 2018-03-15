@@ -25,7 +25,7 @@ python run_dirtt.py --datadir data --run 0 --src mnist --trg svhn --dirt 0
 
 Run DIRT-T (pre-condition: run VADA first)
 ```
-python run_dirtt.py --datadir data --run 0 --src mnist --trg svhn --dirt 500
+python run_dirtt.py --datadir data --run 0 --src mnist --trg svhn --dirt 5000
 ```
 
 Tensorboard logs will be saved to `./log/` by default.
