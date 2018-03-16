@@ -30,6 +30,12 @@ python run_dirtt.py --datadir data --run 0 --src mnist --trg svhn --dirt 5000
 
 Tensorboard logs will be saved to `./log/` by default.
 
+### VADA and DIRT-T Performance
+
+<img src="assets/vada_dirtt.png" width="500"/>
+
+Test run of a single VADA run on MNIST -> SVHN, and using the final VADA model as initialization for 4 separate DIRT-T runs. DIRT-T has higher variance but, on expectation, improves upon VADA.
+
 ### Tensorboard Visualization
 
 ![VADA](assets/tensorboard_vada.png)
